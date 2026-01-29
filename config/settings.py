@@ -1,14 +1,15 @@
 
 from pathlib import Path
 import os
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-your-secret-key-here-change-in-production'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-your-secret-key-here-change-in-production')
 
-DEBUG = False
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['recipe-0imw.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,recipe-0imw.onrender.com').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
