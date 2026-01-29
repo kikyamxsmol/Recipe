@@ -1,0 +1,15 @@
+{% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                {% include 'atoms/alert.html' with message=message type='danger' dismissible=True icon='fas fa-exclamation-circle' %}
+            {% elif message.tags == 'success' %}
+                {% include 'atoms/alert.html' with message=message type='success' dismissible=True icon='fas fa-check-circle' %}
+            {% elif message.tags == 'warning' %}
+                {% include 'atoms/alert.html' with message=message type='warning' dismissible=True icon='fas fa-exclamation-triangle' %}
+            {% else %}
+                {% include 'atoms/alert.html' with message=message type='info' dismissible=True icon='fas fa-info-circle' %}
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-page-modern">
+    <div class="auth-container-modern">
+        <div class="auth-left-panel">
+            <div class="auth-branding">
+                <h1>RecipeShare</h1>
+                <p>Discover and share amazing recipes</p>
+            </div>
+            <div class="auth-benefits">
+                <div class="benefit-item">
+                    <i class="icon">✓</i>
+                    <span>Share your favorite recipes</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="icon">✓</i>
+                    <span>Connect with food lovers</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="icon">✓</i>
+                    <span>Save and organize recipes</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="icon">✓</i>
+                    <span>Rate and review dishes</span>
+                </div>
+            </div>
+            <div class="auth-footer-info">
+                <p>Join thousands of recipe enthusiasts today!</p>
+            </div>
+        </div>
+
+        <div class="auth-right-panel">
+            <div class="auth-form-wrapper">
+                <div class="auth-form-header-modern">
+                    <h2>Create Your Account</h2>
+                    <p>Join our community of recipe lovers</p>
+                </div>
+
+                {% if messages %}
+                    <div class="messages-container">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="post" class="auth-form-modern" id="register-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group-modern">
+                        <label for="id_username" class="form-label-modern">Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <span class="error-message">{{ form.username.errors.0 }}</span>
+                        {% endif %}
+                        <small class="form-hint">Letters, digits, and @/./+/-/_ only</small>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="id_email" class="form-label-modern">Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <span class="error-message">{{ form.email.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="id_password1" class="form-label-modern">Password</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <span class="error-message">{{ form.password1.errors.0 }}</span>
+                        {% endif %}
+                        <div id="password-strength" class="password-strength">
+                            <div class="strength-bar"></div>
+                            <p class="strength-text"></p>
+                        </div>
+                        <small class="form-hint">
+                            • At least 8 characters<br>
+                            • Mix of uppercase and lowercase<br>
+                            • Include numbers and special characters
+                        </small>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="id_password2" class="form-label-modern">Confirm Password</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <span class="error-message">{{ form.password2.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-terms">
+                        <p>By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+                    </div>
+
+                    <button type="submit" class="btn-signup-modern">Create Account</button>
+                </form>
+
+                <div class="auth-divider">
+                    <span>Already have an account?</span>
+                </div>
+
+                <div class="auth-form-footer-modern">
+                    <p>Sign in to access your recipes</p>
+                    <a href="{% url 'login' %}" class="btn-signin-link">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('id_password1').addEventListener('input', function() {
+    checkPasswordStrength(this.value);
+});
+
+function checkPasswordStrength(password) {
+    const strengthBar = document.querySelector('.strength-bar');
+    const strengthText = document.querySelector('.strength-text');
+    let strength = 0;
+    
+    if (password.length >= 8) strength++;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+    if (/\d/.test(password)) strength++;
+    if (/[^a-zA-Z\d]/.test(password)) strength++;
+    
+    const levels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+    const colors = ['#e74c3c', '#e67e22', '#f39c12', '#f1c40f', '#27ae60'];
+    
+    strengthBar.style.width = (strength * 20) + '%';
+    strengthBar.style.backgroundColor = colors[strength - 1] || '#e74c3c';
+    strengthText.textContent = levels[strength - 1] || '';
+}
+</script>
+{% endblock %}

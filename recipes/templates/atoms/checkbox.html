@@ -1,0 +1,11 @@
+<div class="checkbox-wrapper">
+    <input type="checkbox" 
+           id="{{ id }}" 
+           name="{{ name }}"
+           class="form-checkbox"
+           {% if checked %}checked{% endif %}
+           {% if value %}value="{{ value }}"{% endif %}>
+    <label for="{{ id }}" class="checkbox-label">
+        {{ label }}
+    </label>
+</div>

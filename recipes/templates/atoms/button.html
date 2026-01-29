@@ -1,0 +1,8 @@
+<button class="btn btn-{{ variant|default:'primary' }} {% if size %}btn-{{ size }}{% endif %} {% if extra_classes %}{{ extra_classes }}{% endif %}"
+        {% if type %}type="{{ type }}"{% endif %}
+        {% if id %}id="{{ id }}"{% endif %}>
+    {% if icon %}
+        <i class="{{ icon }}"></i>
+    {% endif %}
+    {{ text }}
+</button>

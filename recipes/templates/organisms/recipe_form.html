@@ -1,0 +1,189 @@
+<div class="recipe-form-container">
+    <h2>{% if is_edit %}Edit Recipe{% else %}Create New Recipe{% endif %}</h2>
+    
+    <form method="post" enctype="multipart/form-data" class="recipe-form" id="recipe-form">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h3>Basic Information</h3>
+            
+            {% include 'atoms/form_field.html' with field=form.title %}
+            {% include 'atoms/form_field.html' with field=form.description %}
+            
+            <div class="form-row">
+                <div class="form-col">
+                    {% include 'atoms/form_field.html' with field=form.category %}
+                </div>
+                <div class="form-col">
+                    {% include 'atoms/form_field.html' with field=form.difficulty %}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    {% include 'atoms/form_field.html' with field=form.prep_time %}
+                </div>
+                <div class="form-col">
+                    {% include 'atoms/form_field.html' with field=form.cook_time %}
+                </div>
+                <div class="form-col">
+                    {% include 'atoms/form_field.html' with field=form.servings %}
+                </div>
+            </div>
+            
+            {% include 'atoms/form_field.html' with field=form.image %}
+        </div>
+        
+        <div class="form-section">
+            <div class="form-section-header">
+                <h3>Ingredients</h3>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="addFormsetItem('ingredients')">
+                    <i class="fas fa-plus"></i> Add Ingredient
+                </button>
+            </div>
+            
+            <div id="ingredients-formset">
+                {{ ingredient_formset.management_form }}
+                <div class="formset-items">
+                    {% for form in ingredient_formset %}
+                        <div class="formset-item" data-formset-item>
+                            <div class="formset-item-fields">
+                                <div class="form-row">
+                                    <div class="form-col-2">
+                                        {% include 'atoms/form_field.html' with field=form.quantity %}
+                                    </div>
+                                    <div class="form-col-6">
+                                        {% include 'atoms/form_field.html' with field=form.name %}
+                                    </div>
+                                    <div class="form-col-2">
+                                        {% include 'atoms/form_field.html' with field=form.order %}
+                                    </div>
+                                    <div class="form-col-2">
+                                        {% if form.instance.pk %}
+                                            {{ form.DELETE }}
+                                            <label for="{{ form.DELETE.id_for_label }}" class="delete-label">Delete</label>
+                                        {% endif %}
+                                        <button type="button" class="btn-remove" onclick="removeFormsetItem(this)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                {{ form.id }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-section-header">
+                <h3>Instructions</h3>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="addFormsetItem('instructions')">
+                    <i class="fas fa-plus"></i> Add Step
+                </button>
+            </div>
+            
+            <div id="instructions-formset">
+                {{ instruction_formset.management_form }}
+                <div class="formset-items">
+                    {% for form in instruction_formset %}
+                        <div class="formset-item" data-formset-item>
+                            <div class="formset-item-fields">
+                                <div class="form-row">
+                                    <div class="form-col-2">
+                                        {% include 'atoms/form_field.html' with field=form.step_number %}
+                                    </div>
+                                    <div class="form-col-8">
+                                        {% include 'atoms/form_field.html' with field=form.description %}
+                                    </div>
+                                    <div class="form-col-2">
+                                        {% if form.instance.pk %}
+                                            {{ form.DELETE }}
+                                            <label for="{{ form.DELETE.id_for_label }}" class="delete-label">Delete</label>
+                                        {% endif %}
+                                        <button type="button" class="btn-remove" onclick="removeFormsetItem(this)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                {{ form.id }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            {% include 'atoms/button.html' with text='Save Recipe' type='submit' variant='primary' icon='fas fa-save' %}
+            <a href="{% if is_edit %}{% url 'recipe_detail' slug=recipe.slug %}{% else %}{% url 'recipe_list' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function addFormsetItem(prefix) {
+    const formset = document.getElementById(prefix + '-formset');
+    const container = formset.querySelector('.formset-items');
+    const totalForms = formset.querySelector(`#id_${prefix}-TOTAL_FORMS`);
+    const formIdx = parseInt(totalForms.value);
+    
+    // Get the last form and clone it
+    const forms = container.querySelectorAll('[data-formset-item]');
+    if (forms.length === 0) return;
+    
+    const lastForm = forms[forms.length - 1];
+    const newForm = lastForm.cloneNode(true);
+    
+    // Update form index in all fields
+    const regex = new RegExp(`${prefix}-(\\d+)-`, 'g');
+    newForm.innerHTML = newForm.innerHTML.replace(regex, `${prefix}-${formIdx}-`);
+    
+    // Clear values
+    newForm.querySelectorAll('input, textarea').forEach(input => {
+        if (input.type !== 'hidden') {
+            input.value = '';
+        }
+    });
+    
+    // Add to container
+    container.appendChild(newForm);
+    
+    // Update TOTAL_FORMS
+    totalForms.value = formIdx + 1;
+}
+
+function removeFormsetItem(button) {
+    const item = button.closest('[data-formset-item]');
+    const deleteCheckbox = item.querySelector('input[name$="-DELETE"]');
+    
+    if (deleteCheckbox) {
+        // Mark for deletion instead of removing
+        deleteCheckbox.checked = true;
+        item.style.display = 'none';
+    } else {
+        // Remove from DOM if it's a new item
+        item.remove();
+    }
+}
+
+// Auto-number steps
+document.addEventListener('DOMContentLoaded', function() {
+    const instructionForms = document.querySelectorAll('#instructions-formset [data-formset-item]');
+    instructionForms.forEach((form, index) => {
+        const stepInput = form.querySelector('input[name$="-step_number"]');
+        if (stepInput && !stepInput.value) {
+            stepInput.value = index + 1;
+        }
+    });
+    
+    const ingredientForms = document.querySelectorAll('#ingredients-formset [data-formset-item]');
+    ingredientForms.forEach((form, index) => {
+        const orderInput = form.querySelector('input[name$="-order"]');
+        if (orderInput && !orderInput.value) {
+            orderInput.value = index + 1;
+        }
+    });
+});
+</script>

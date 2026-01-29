@@ -1,0 +1,8 @@
+<div class="instructions-section">
+    <h2>Instructions</h2>
+    <div class="instructions-list">
+        {% for instruction in instructions %}
+            {% include 'molecules/instruction_step.html' with instruction=instruction %}
+        {% endfor %}
+    </div>
+</div>

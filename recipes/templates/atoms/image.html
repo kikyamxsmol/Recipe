@@ -1,0 +1,9 @@
+﻿{% load static %}
+{% static 'images/placeholder-recipe.svg' as placeholder %}
+<img src="{{ src|safe }}" 
+     alt="{{ alt }}" 
+     class="image {% if rounded %}image-rounded{% endif %} {{ extra_classes }}"
+     {% if width %}width="{{ width }}"{% endif %}
+     {% if height %}height="{{ height }}"{% endif %}
+     loading="lazy" decoding="async"
+     onerror="this.onerror=null;this.src='{{ placeholder|escapejs }}';">

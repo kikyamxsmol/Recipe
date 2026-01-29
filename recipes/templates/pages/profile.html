@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ profile.user.username }}'s Profile</h1>
+    <p>Welcome, {{ profile.user.username }}!</p>
+    <div class="profile-social">
+        <span><strong>Followers:</strong> {{ profile.followers.count }}</span>
+        <span><strong>Following:</strong> {{ profile.following.count }}</span>
+        {% if user.is_authenticated and user != profile.user %}
+            <form method="post" action="{% url 'follow_user' username=profile.user.username %}">
+                {% csrf_token %}
+                {% if user.profile in profile.followers.all %}
+                    <button type="submit" class="btn btn-secondary">Unfollow</button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary">Follow</button>
+                {% endif %}
+            </form>
+        {% endif %}
+        <div class="followers-list">
+            <h3>Followers</h3>
+            {% if profile.followers.all %}
+                <ul>
+                {% for follower in profile.followers.all %}
+                    <li class="follower-card">
+                        {% if follower.avatar %}
+                            <img src="{{ follower.avatar.url }}" alt="{{ follower.user.username }} avatar" class="follower-avatar">
+                        {% else %}
+                            <img src="{% static 'images/placeholder-recipe.svg' %}" alt="avatar" class="follower-avatar">
+                        {% endif %}
+                        <a href="{% url 'profile_detail' username=follower.user.username %}" class="follower-name">{{ follower.user.username }}</a>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No followers yet.</p>
+            {% endif %}
+        </div>
+        <div class="following-list">
+            <h3>Following</h3>
+            {% if profile.following.all %}
+                <ul>
+                {% for following in profile.following.all %}
+                    <li class="following-card">
+                        {% if following.avatar %}
+                            <img src="{{ following.avatar.url }}" alt="{{ following.user.username }} avatar" class="following-avatar">
+                        {% else %}
+                            <img src="{% static 'images/placeholder-recipe.svg' %}" alt="avatar" class="following-avatar">
+                        {% endif %}
+                        <a href="{% url 'profile_detail' username=following.user.username %}" class="following-name">{{ following.user.username }}</a>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>Not following anyone yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% include 'organisms/profile_form.html' with form=form %}
+    
+    <h2>My Recipes</h2>
+    {% include 'organisms/recipe_grid.html' with recipes=user_recipes %}
+    
+    <h2>Favorite Recipes</h2>
+    {% include 'organisms/recipe_grid.html' with recipes=favorite_recipes %}
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+<input type="{{ input_type|default:'text' }}" 
+       name="{{ name }}" 
+       id="{{ id|default:name }}"
+       class="form-input {% if error %}input-error{% endif %} {{ extra_classes }}"
+       {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+       {% if value %}value="{{ value }}"{% endif %}
+       {% if required %}required{% endif %}>

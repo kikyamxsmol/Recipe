@@ -1,0 +1,8 @@
+<div class="ingredients-section">
+    <h2>Ingredients</h2>
+    <ul class="ingredients-list">
+        {% for ingredient in ingredients %}
+            {% include 'molecules/ingredient_item.html' with ingredient=ingredient %}
+        {% endfor %}
+    </ul>
+</div>

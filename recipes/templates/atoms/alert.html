@@ -1,0 +1,11 @@
+<div class="alert alert-{{ type|default:'info' }} {% if dismissible %}alert-dismissible{% endif %}">
+    {% if icon %}
+        {% include 'atoms/icon.html' with icon_class=icon %}
+    {% endif %}
+    <span class="alert-message">{{ message }}</span>
+    {% if dismissible %}
+        <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    {% endif %}
+</div>

@@ -1,0 +1,31 @@
+<div class="auth-form-container">
+    <div class="auth-form-header">
+        <h2>Create Account</h2>
+        <p>Join our recipe community today</p>
+    </div>
+    
+    <form method="post" class="auth-form" id="register-form">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            {% include 'atoms/form_field.html' with field=field %}
+            
+            {% if field.name == 'password1' %}
+                {% include 'molecules/password_strength.html' %}
+                <script>
+                    document.getElementById('id_password1').addEventListener('input', function() {
+                        checkPasswordStrength(this.value);
+                    });
+                </script>
+            {% endif %}
+        {% endfor %}
+        
+        <div class="form-actions">
+            {% include 'atoms/button.html' with text='Create Account' type='submit' variant='primary' extra_classes='btn-block' %}
+        </div>
+    </form>
+    
+    <div class="auth-form-footer">
+        <p>Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+    </div>
+</div>

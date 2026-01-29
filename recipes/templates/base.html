@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Recipe App{% endblock %}</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/atoms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/molecules.css' %}">
+    <link rel="stylesheet" href="{% static 'css/organisms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <a class="skip-link" href="#main" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Skip to content</a>
+    {% include 'organisms/navigation.html' %}
+    
+    {% include 'organisms/messages_display.html' %}
+    
+    <main id="main" role="main">
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2024 Recipe App. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

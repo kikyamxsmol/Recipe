@@ -1,0 +1,12 @@
+<div class="rating-display">
+    {% for i in "12345" %}
+        {% if forloop.counter <= rating %}
+            {% include 'atoms/icon.html' with icon_class='fas fa-star' %}
+        {% else %}
+            {% include 'atoms/icon.html' with icon_class='far fa-star' %}
+        {% endif %}
+    {% endfor %}
+    {% if show_number %}
+        <span class="rating-number">({{ rating }})</span>
+    {% endif %}
+</div>

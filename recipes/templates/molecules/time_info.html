@@ -1,0 +1,23 @@
+<div class="time-info">
+    <div class="time-info-item">
+        {% include 'atoms/icon.html' with icon_class='fas fa-stopwatch' %}
+        <div>
+            <span class="time-label">Prep Time</span>
+            <span class="time-value">{{ prep_time }} min</span>
+        </div>
+    </div>
+    <div class="time-info-item">
+        {% include 'atoms/icon.html' with icon_class='fas fa-fire' %}
+        <div>
+            <span class="time-label">Cook Time</span>
+            <span class="time-value">{{ cook_time }} min</span>
+        </div>
+    </div>
+    <div class="time-info-item">
+        {% include 'atoms/icon.html' with icon_class='far fa-clock' %}
+        <div>
+            <span class="time-label">Total Time</span>
+            <span class="time-value">{{ total_time }} min</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+<div class="recipe-card">
+    <a href="{% url 'recipe_detail' slug=recipe.slug %}" class="recipe-card-link">
+        {% if recipe.image %}
+            {% include 'atoms/image.html' with src=recipe.image.url alt=recipe.title rounded=True extra_classes='recipe-card-image' %}
+        {% else %}
+            <div class="recipe-card-image-placeholder">
+                {% include 'atoms/icon.html' with icon_class='fas fa-utensils' size='lg' %}
+            </div>
+        {% endif %}
+        
+        <div class="recipe-card-content">
+            <h3 class="recipe-card-title">{{ recipe.title }}</h3>
+            
+            <div class="recipe-card-meta">
+                {% include 'atoms/badge.html' with text=recipe.get_difficulty_display variant=recipe.difficulty %}
+                {% if recipe.category %}
+                    {% include 'atoms/badge.html' with text=recipe.category.name variant='secondary' %}
+                {% endif %}
+            </div>
+            
+            <p class="recipe-card-description">{{ recipe.description|truncatewords:20 }}</p>
+            
+            {% if recipe.ingredients.all %}
+                <div class="recipe-card-ingredients">
+                    <h4>Ingredients:</h4>
+                    <ul>
+                        {% for ingredient in recipe.ingredients.all|slice:":3" %}
+                            <li>{{ ingredient }}</li>
+                        {% endfor %}
+                        {% if recipe.ingredients.count > 3 %}
+                            <li><em>+{{ recipe.ingredients.count|add:"-3" }} more</em></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            {% if recipe.instructions.all %}
+                <div class="recipe-card-instructions">
+                    <h4>Steps:</h4>
+                    <ol>
+                        {% for instruction in recipe.instructions.all|slice:":2" %}
+                            <li>{{ instruction.description|truncatewords:8 }}</li>
+                        {% endfor %}
+                        {% if recipe.instructions.count > 2 %}
+                            <li><em>+{{ recipe.instructions.count|add:"-2" }} more steps</em></li>
+                        {% endif %}
+                    </ol>
+                </div>
+            {% endif %}
+            
+            <div class="recipe-card-info">
+                <span>
+                    {% include 'atoms/icon.html' with icon_class='far fa-clock' %}
+                    {{ recipe.total_time }} min
+                </span>
+                <span>
+                    {% include 'atoms/icon.html' with icon_class='fas fa-user-friends' %}
+                    {{ recipe.servings }} servings
+                </span>
+            </div>
+        </div>
+    </a>
+</div>

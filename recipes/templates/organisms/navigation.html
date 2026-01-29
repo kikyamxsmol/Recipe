@@ -1,0 +1,27 @@
+
+<nav class="main-navigation">
+    <div class="nav-container">
+        <a href="{% url 'home' %}" class="nav-logo">
+            {% include 'atoms/icon.html' with icon_class='fas fa-utensils' %}
+            <span>Recipe App</span>
+        </a>
+        
+        <ul class="nav-links">
+            <li><a href="{% url 'recipe_list' %}">All Recipes</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'my_recipes' %}">My Recipes</a></li>
+                <li><a href="{% url 'add_recipe' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> Add Recipe
+                </a></li>
+                <li><a href="{% url 'profile' %}">Profile</a></li>
+                <li class="nav-user">
+                    <span>{{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="btn btn-secondary btn-sm">Logout</a>
+                </li>
+            {% else %}
+                <li><a href="{% url 'login' %}" class="btn btn-secondary btn-sm">Login</a></li>
+                <li><a href="{% url 'register' %}" class="btn btn-primary btn-sm">Sign Up</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

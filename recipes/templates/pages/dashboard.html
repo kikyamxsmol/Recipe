@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}RecipeShare - Discover Amazing Recipes{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Welcome to RecipeShare</h1>
+            <p>Discover, create, and share your favorite recipes with our community</p>
+            <div class="hero-actions">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'add_recipe' %}" class="btn btn-hero-primary">
+                        <i class="fas fa-plus"></i> Share Your Recipe
+                    </a>
+                    <a href="{% url 'recipe_list' %}" class="btn btn-hero-secondary">
+                        <i class="fas fa-search"></i> Browse Recipes
+                    </a>
+                {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-hero-primary">
+                        <i class="fas fa-user-plus"></i> Join Us Free
+                    </a>
+                    <a href="{% url 'recipe_list' %}" class="btn btn-hero-secondary">
+                        <i class="fas fa-search"></i> Browse Recipes
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="hero-background">
+            <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 0 200 Q 250 100 500 150 T 1000 200 L 1000 500 L 0 500 Z" fill="#667eea" opacity="0.2"/>
+                <path d="M 0 250 Q 250 150 500 200 T 1000 250 L 1000 500 L 0 500 Z" fill="#764ba2" opacity="0.2"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Search Bar -->
+    <section class="dashboard-search">
+        <div class="search-wrapper">
+            <form method="get" action="{% url 'recipe_list' %}" class="search-form">
+                <div class="search-input-wrapper">
+                    <input type="text" name="q" placeholder="Search recipes by name, ingredients..." class="search-input" value="">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Trending Section -->
+    {% if trending %}
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2><i class="fas fa-fire"></i> Trending Now</h2>
+            <a href="{% url 'recipe_list' %}?sort=most_viewed" class="view-all">View All</a>
+        </div>
+        <div class="recipe-carousel">
+            {% for recipe in trending %}
+                {% include 'molecules/RecipeCard.html' with recipe=recipe %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Top Rated Section -->
+    {% if top_rated %}
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2><i class="fas fa-star"></i> Top Rated Recipes</h2>
+            <a href="{% url 'recipe_list' %}?sort=most_rated" class="view-all">View All</a>
+        </div>
+        <div class="recipe-carousel">
+            {% for recipe in top_rated %}
+                {% include 'molecules/RecipeCard.html' with recipe=recipe %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Following Section (for logged in users) -->
+    {% if user.is_authenticated and following_recipes %}
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2><i class="fas fa-users"></i> From People You Follow</h2>
+            <a href="{% url 'recipe_list' %}" class="view-all">View All</a>
+        </div>
+        <div class="recipe-carousel">
+            {% for recipe in following_recipes %}
+                {% include 'molecules/RecipeCard.html' with recipe=recipe %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Recommended Section (for logged in users) -->
+    {% if user.is_authenticated and recommended %}
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2><i class="fas fa-lightbulb"></i> Recommended For You</h2>
+            <a href="{% url 'recipe_list' %}" class="view-all">View All</a>
+        </div>
+        <div class="recipe-carousel">
+            {% for recipe in recommended %}
+                {% include 'molecules/RecipeCard.html' with recipe=recipe %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Recent Section -->
+    {% if recent %}
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2><i class="fas fa-clock"></i> Recently Added</h2>
+            <a href="{% url 'recipe_list' %}" class="view-all">View All</a>
+        </div>
+        <div class="recipe-carousel">
+            {% for recipe in recent %}
+                {% include 'molecules/RecipeCard.html' with recipe=recipe %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Popular Categories -->
+    {% if popular_categories %}
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2><i class="fas fa-list"></i> Popular Categories</h2>
+        </div>
+        <div class="categories-grid">
+            {% for category in popular_categories %}
+                <a href="{% url 'recipe_list' %}?category={{ category.slug }}" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>{{ category.name }}</h3>
+                    <p>{{ category.recipe_count }} recipes</p>
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Call to Action -->
+    {% if not user.is_authenticated %}
+    <section class="dashboard-cta">
+        <div class="cta-content">
+            <h2>Ready to Share Your Recipes?</h2>
+            <p>Join our community of food lovers and start sharing your favorite recipes today!</p>
+            <a href="{% url 'register' %}" class="btn btn-cta">Create Your Account</a>
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+<style>
+.dashboard-container {
+    width: 100%;
+}
+
+.hero-section {
+    position: relative;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 1rem;
+    text-align: center;
+    overflow: hidden;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100%;
+    opacity: 0.3;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-hero-primary,
+.btn-hero-secondary {
+    padding: 0.9rem 2rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-hero-primary {
+    background: white;
+    color: #667eea;
+}
+
+.btn-hero-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn-hero-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-hero-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.dashboard-search {
+    padding: 2rem 1rem;
+    background: #f8f9fa;
+}
+
+.search-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-form {
+    display: flex;
+}
+
+.search-input-wrapper {
+    display: flex;
+    width: 100%;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    font-size: 1rem;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.search-btn:hover {
+    opacity: 0.9;
+}
+
+.dashboard-section {
+    padding: 3rem 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-header h2 i {
+    color: #667eea;
+}
+
+.view-all {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.view-all:hover {
+    color: #764ba2;
+}
+
+.recipe-carousel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.category-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.category-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.category-card h3 {
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.category-card p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.dashboard-cta {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.cta-content p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+
+.btn-cta {
+    display: inline-block;
+    background: white;
+    color: #667eea;
+    padding: 0.9rem 2rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-section p {
+        font-size: 1rem;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+    }
+    
+    .btn-hero-primary,
+    .btn-hero-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .recipe-carousel {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+    
+    .hero-section h1 {
+        font-size: 1.5rem;
+    }
+    
+    .recipe-carousel {
+        grid-template-columns: 1fr;
+    }
+    
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

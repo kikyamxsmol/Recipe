@@ -1,0 +1,10 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{% if is_edit %}Edit Recipe{% else %}Add Recipe{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% include 'organisms/recipe_form.html' with form=form ingredient_formset=ingredient_formset instruction_formset=instruction_formset is_edit=is_edit %}
+</div>
+{% endblock %}

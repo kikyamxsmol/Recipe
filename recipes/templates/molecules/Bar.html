@@ -1,0 +1,6 @@
+<form method="get" action="{% url 'recipe_list' %}" class="search-form">
+    <div class="search-bar">
+        {% include 'atoms/input.html' with name='q' placeholder='Search recipes...' value=request.GET.q extra_classes='search-input' %}
+        {% include 'atoms/button.html' with text='Search' type='submit' variant='primary' icon='fas fa-search' %}
+    </div>
+</form>

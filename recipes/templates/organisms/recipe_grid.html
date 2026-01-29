@@ -1,0 +1,9 @@
+<div class="recipe-grid">
+    {% for recipe in recipes %}
+        {% include 'molecules/recipe_card.html' with recipe=recipe %}
+    {% empty %}
+        <div class="no-recipes">
+            <p>No recipes found.</p>
+        </div>
+    {% endfor %}
+</div>

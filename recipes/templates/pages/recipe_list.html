@@ -1,0 +1,493 @@
+﻿{% extends "base.html" %}
+{% load static %}
+
+{% block title %}All Recipes - Search & Discover{% endblock %}
+
+{% block content %}
+<div class="recipe-list-container">
+    <div class="recipe-list-header">
+        <h1><i class="fas fa-book-open"></i> Discover Recipes</h1>
+        <p>Find your next favorite dish from our collection</p>
+    </div>
+    
+    <!-- Advanced Search and Filter Form -->
+    <form method="get" class="advanced-search-form">
+        <div class="search-filter-section">
+            <!-- Main Search -->
+            <div class="search-input-group">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search recipes by name, tags, or ingredients..." class="search-input-large">
+                <button type="submit" class="btn-search-large">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+
+            <!-- Toggle Advanced Filters -->
+            <div class="filter-toggle">
+                <button type="button" class="btn-toggle-filters" onclick="toggleFilters()">
+                    <i class="fas fa-sliders-h"></i> Advanced Filters
+                </button>
+            </div>
+
+            <!-- Advanced Filters (Collapsible) -->
+            <div class="advanced-filters" id="advancedFilters">
+                <div class="filters-grid">
+                    <!-- Difficulty -->
+                    <div class="filter-group-advanced">
+                        <label for="difficulty">
+                            <i class="fas fa-chart-line"></i> Difficulty
+                        </label>
+                        <select name="difficulty" id="difficulty" class="filter-select-advanced">
+                            <option value="">All Levels</option>
+                            <option value="easy" {% if selected_difficulty == "easy" %}selected{% endif %}>Easy</option>
+                            <option value="medium" {% if selected_difficulty == "medium" %}selected{% endif %}>Medium</option>
+                            <option value="hard" {% if selected_difficulty == "hard" %}selected{% endif %}>Hard</option>
+                        </select>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="filter-group-advanced">
+                        <label for="category">
+                            <i class="fas fa-tag"></i> Category
+                        </label>
+                        <select name="category" id="category" class="filter-select-advanced">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Dietary Restrictions -->
+                    <div class="filter-group-advanced">
+                        <label for="dietary">
+                            <i class="fas fa-apple-alt"></i> Dietary
+                        </label>
+                        <select name="dietary" id="dietary" class="filter-select-advanced">
+                            <option value="">All Diets</option>
+                            {% for value, label in dietary_options %}
+                                {% if value != "none" %}
+                                    <option value="{{ value }}" {% if selected_dietary == value %}selected{% endif %}>{{ label }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Prep Time -->
+                    <div class="filter-group-advanced">
+                        <label for="prep_time_max">
+                            <i class="fas fa-hourglass-start"></i> Prep Time
+                        </label>
+                        <select name="prep_time_max" id="prep_time_max" class="filter-select-advanced">
+                            <option value="">Any Time</option>
+                            <option value="15" {% if selected_prep_time == "15" %}selected{% endif %}>Up to 15 min</option>
+                            <option value="30" {% if selected_prep_time == "30" %}selected{% endif %}>Up to 30 min</option>
+                            <option value="60" {% if selected_prep_time == "60" %}selected{% endif %}>Up to 1 hour</option>
+                            <option value="120" {% if selected_prep_time == "120" %}selected{% endif %}>Up to 2 hours</option>
+                        </select>
+                    </div>
+
+                    <!-- Total Time -->
+                    <div class="filter-group-advanced">
+                        <label for="total_time_max">
+                            <i class="fas fa-hourglass-end"></i> Total Time
+                        </label>
+                        <select name="total_time_max" id="total_time_max" class="filter-select-advanced">
+                            <option value="">Any Time</option>
+                            <option value="30" {% if selected_total_time == "30" %}selected{% endif %}>Up to 30 min</option>
+                            <option value="60" {% if selected_total_time == "60" %}selected{% endif %}>Up to 1 hour</option>
+                            <option value="90" {% if selected_total_time == "90" %}selected{% endif %}>Up to 1.5 hours</option>
+                            <option value="120" {% if selected_total_time == "120" %}selected{% endif %}>Up to 2 hours</option>
+                        </select>
+                    </div>
+
+                    <!-- Minimum Rating -->
+                    <div class="filter-group-advanced">
+                        <label for="min_rating">
+                            <i class="fas fa-star"></i> Min Rating
+                        </label>
+                        <select name="min_rating" id="min_rating" class="filter-select-advanced">
+                            <option value="">All Ratings</option>
+                            <option value="3" {% if selected_rating == "3" %}selected{% endif %}>3+ Stars</option>
+                            <option value="4" {% if selected_rating == "4" %}selected{% endif %}>4+ Stars</option>
+                            <option value="5" {% if selected_rating == "5" %}selected{% endif %}>5 Stars</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort -->
+                    <div class="filter-group-advanced">
+                        <label for="sort">
+                            <i class="fas fa-sort"></i> Sort By
+                        </label>
+                        <select name="sort" id="sort" class="filter-select-advanced">
+                            <option value="newest" {% if selected_sort == "newest" %}selected{% endif %}>Newest First</option>
+                            <option value="fastest" {% if selected_sort == "fastest" %}selected{% endif %}>Fastest to Cook</option>
+                            <option value="most_viewed" {% if selected_sort == "most_viewed" %}selected{% endif %}>Most Viewed</option>
+                            <option value="most_rated" {% if selected_sort == "most_rated" %}selected{% endif %}>Most Rated</option>
+                            <option value="title" {% if selected_sort == "title" %}selected{% endif %}>Name (A-Z)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="btn-apply-filters">Apply Filters</button>
+                    <a href="{% url 'recipe_list' %}" class="btn-reset-filters">Clear All</a>
+                </div>
+            </div>
+
+            <!-- Active Filters Display -->
+            {% if query or selected_category or selected_difficulty or selected_dietary or selected_prep_time or selected_total_time or selected_rating %}
+                <div class="active-filters-display">
+                    <span class="filters-label">Active Filters:</span>
+                    <div class="filters-list">
+                        {% if query %}
+                            <a href="?{% for key, val in request.GET.items %}{% if key != "q" %}{{ key }}={{ val }}&{% endif %}{% endfor %}" class="filter-chip">
+                                Search: "{{ query }}" <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                        {% if selected_difficulty %}
+                            <a href="?{% for key, val in request.GET.items %}{% if key != "difficulty" %}{{ key }}={{ val }}&{% endif %}{% endfor %}" class="filter-chip">
+                                {{ selected_difficulty|title }} <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                        {% if selected_category %}
+                            <a href="?{% for key, val in request.GET.items %}{% if key != "category" %}{{ key }}={{ val }}&{% endif %}{% endfor %}" class="filter-chip">
+                                {{ selected_category|title }} <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                        {% if selected_dietary %}
+                            <a href="?{% for key, val in request.GET.items %}{% if key != "dietary" %}{{ key }}={{ val }}&{% endif %}{% endfor %}" class="filter-chip">
+                                {{ selected_dietary|title }} <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                        {% if selected_prep_time %}
+                            <a href="?{% for key, val in request.GET.items %}{% if key != "prep_time_max" %}{{ key }}={{ val }}&{% endif %}{% endfor %}" class="filter-chip">
+                                Prep: {{ selected_prep_time }}min <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                        {% if selected_total_time %}
+                            <a href="?{% for key, val in request.GET.items %}{% if key != "total_time_max" %}{{ key }}={{ val }}&{% endif %}{% endfor %}" class="filter-chip">
+                                Total: {{ selected_total_time }}min <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                        {% if selected_rating %}
+                            <a href="?{% for key, val in request.GET.items %}{% if key != "min_rating" %}{{ key }}={{ val }}&{% endif %}{% endfor %}" class="filter-chip">
+                                Rating: {{ selected_rating }}+ <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                        <a href="{% url "recipe_list" %}" class="filter-chip filter-chip-clear">
+                            Clear All <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Recipes Grid -->
+    {% if recipes %}
+        <div class="recipes-results">
+            <p class="results-info">Showing {{ recipes.paginator.count }} recipes</p>
+            {% include "organisms/recipe_grid.html" with recipes=recipes %}
+        </div>
+    {% else %}
+        <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h2>No recipes found</h2>
+            <p>Try adjusting your filters or search terms</p>
+            <a href="{% url 'recipe_list' %}" class="btn btn-primary">Clear Filters</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleFilters() {
+    const filters = document.getElementById('advancedFilters');
+    filters.style.display = filters.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+
+<style>
+.recipe-list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.recipe-list-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.recipe-list-header h1 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.recipe-list-header p {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+}
+
+.advanced-search-form {
+    margin-bottom: 2rem;
+}
+
+.search-filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.search-input-large {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    font-size: 1.05rem;
+}
+
+.btn-search-large {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-search-large:hover {
+    opacity: 0.9;
+}
+
+.filter-toggle {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-toggle-filters {
+    background: #f0f0f0;
+    border: 2px solid #ddd;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: #667eea;
+    transition: all 0.3s ease;
+}
+
+.btn-toggle-filters:hover {
+    border-color: #667eea;
+    background: #f8f9fa;
+}
+
+.advanced-filters {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ecf0f1;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-group-advanced {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-group-advanced label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-group-advanced label i {
+    color: #667eea;
+}
+
+.filter-select-advanced {
+    padding: 0.75rem;
+    border: 2px solid #ecf0f1;
+    border-radius: 0.4rem;
+    font-size: 0.9rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-select-advanced:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-apply-filters,
+.btn-reset-filters {
+    padding: 0.75rem 2rem;
+    border-radius: 0.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-apply-filters {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-apply-filters:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-reset-filters {
+    background: #ecf0f1;
+    color: #2c3e50;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-reset-filters:hover {
+    background: #ddd;
+}
+
+.active-filters-display {
+    background: #e8f5e9;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #27ae60;
+}
+
+.filters-label {
+    font-weight: 600;
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.filters-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    border: 1px solid #27ae60;
+    color: #27ae60;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.filter-chip:hover {
+    background: #f1f8f6;
+}
+
+.filter-chip-clear {
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
+.filter-chip-clear:hover {
+    background: #fadbd8;
+}
+
+.recipes-results {
+    margin-top: 2rem;
+}
+
+.results-info {
+    color: #7f8c8d;
+    margin-bottom: 1rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.no-results i {
+    font-size: 3rem;
+    color: #bdc3c7;
+    margin-bottom: 1rem;
+}
+
+.no-results h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.no-results p {
+    color: #7f8c8d;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .filters-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .filter-actions {
+        flex-direction: column;
+    }
+    
+    .btn-apply-filters,
+    .btn-reset-filters {
+        width: 100%;
+    }
+    
+    .recipe-list-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-input-group {
+        flex-direction: column;
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters-list {
+        flex-direction: column;
+    }
+    
+    .filter-chip {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+</style>
+{% endblock %}

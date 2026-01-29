@@ -1,0 +1,18 @@
+{% load static %}
+<div class="recipe-header">
+    <div class="recipe-header-image">
+        {% if recipe.image %}
+            {% include 'atoms/image.html' with src=recipe.image.url alt=recipe.title %}
+        {% else %}
+            {% static 'images/placeholder-recipe.svg' as placeholder %}
+            {% include 'atoms/image.html' with src=placeholder alt='Placeholder' %}
+        {% endif %}
+    </div>
+    
+    <div class="recipe-header-content">
+        <h1 class="recipe-title">{{ recipe.title }}</h1>
+        <p class="recipe-author">By {% if recipe.author.get_full_name %}{{ recipe.author.get_full_name }}{% else %}{{ recipe.author.username }}{% endif %}</p>
+        <p class="recipe-description">{{ recipe.description }}</p>
+        {% include 'molecules/time_info.html' with prep_time=recipe.prep_time cook_time=recipe.cook_time total_time=recipe.total_time %}
+    </div>
+</div>
