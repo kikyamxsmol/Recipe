@@ -1,11 +1,20 @@
 
-from .models import Recipe, Ingredient, Instruction, UserProfile
+from .models import Recipe, Ingredient, Instruction, UserProfile, Category
 from django import forms
 from django.forms import inlineformset_factory
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
 class RecipeForm(forms.ModelForm):
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all().order_by('name'),
+        empty_label=None,
+        widget=forms.Select(attrs={
+            'class': 'form-input'
+        }),
+        required=True
+    )
+    
     class Meta:
         model = Recipe
         fields = ['title', 'description', 'category', 'prep_time', 'cook_time', 
@@ -19,9 +28,6 @@ class RecipeForm(forms.ModelForm):
                 'class': 'form-input',
                 'rows': 4,
                 'placeholder': 'Describe your recipe...'
-            }),
-            'category': forms.Select(attrs={
-                'class': 'form-input'
             }),
             'prep_time': forms.NumberInput(attrs={
                 'class': 'form-input',
