@@ -8,9 +8,19 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 """
 
 import os
+import sys
+from pathlib import Path
 
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 application = get_wsgi_application()
+
+# Ensure migrations run on startup
+try:
+    from django.core.management import call_command
+    call_command('migrate', verbosity=0, interactive=False)
+except Exception as e:
+    print(f"Warning: Could not run migrations on startup: {e}", file=sys.stderr)
+
