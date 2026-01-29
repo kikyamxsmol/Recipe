@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 class RecipeForm(forms.ModelForm):
     category = forms.ModelChoiceField(
         queryset=Category.objects.all().order_by('name'),
-        empty_label=None,
+        empty_label="-- Select a Category --",
         widget=forms.Select(attrs={
             'class': 'form-input'
         }),

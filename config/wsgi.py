@@ -21,6 +21,7 @@ application = get_wsgi_application()
 try:
     from django.core.management import call_command
     call_command('migrate', verbosity=0, interactive=False)
+    call_command('create_categories', verbosity=0)
 except Exception as e:
-    print(f"Warning: Could not run migrations on startup: {e}", file=sys.stderr)
+    print(f"Warning: Could not run migrations/commands on startup: {e}", file=sys.stderr)
 
